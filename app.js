@@ -24,6 +24,11 @@ app.route('/user/:id/state')
   .get(user.getUserState)
   .put(user.saveUserState);
 
+// User friends
+app.route('/user/:id/friends')
+  .get(user.getUserFriends)
+  .put(user.saveUserFriends);
+
 // If we reach this middleware the route could not be handled and must be unknown.
 app.use(handle404);
 

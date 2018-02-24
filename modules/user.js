@@ -97,3 +97,34 @@ module.exports.saveUserState = function(req, res, next) {
     res.json(result);
   });
 }
+
+/*
+ * Get user friends.
+ */
+module.exports.getUserFriends = function(req, res, next) {
+  var id = req.params.id;
+
+  r.table('user').get(id).pluck('friends').run(req.app._rdbConn, function(err, result) {
+    if(err) {
+      return next(err);
+    }
+
+    res.json(result);
+  });
+}
+
+/*
+ * Save user friends.
+ */
+module.exports.saveUserFriends = function(req, res, next) {
+  var friends = req.body;
+  var id    = req.params.id;
+
+  r.table('user').get(id).update(friends, {returnChanges: true}).run(req.app._rdbConn, function(err, result) {
+    if(err) {
+      return next(err);
+    }
+
+    res.json(result);
+  });
+}
