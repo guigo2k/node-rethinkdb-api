@@ -2,7 +2,7 @@ FROM node:9.6-alpine
 
 # environment
 ENV HTTP_PORT=3000
-ENV NODE_ENV=production
+ENV NODE_ENV=development
 
 # source code
 ADD . /app

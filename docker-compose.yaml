@@ -1,0 +1,20 @@
+version: "2"
+services:
+  rethinkdb:
+    image: "rethinkdb"
+    volumes:
+      - ./data:/data
+    ports:
+      - "28015"
+      - "8080:8080"
+  app:
+    image: "node-game-api"
+    environment:
+      - NODE_ENV=development
+      - DB_PORT=28015
+      - DB_HOST=rethinkdb
+      - DB_NAME=game
+    volumes:
+      - ./:/app
+    ports:
+      - "3000:3000"
