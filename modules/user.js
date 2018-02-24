@@ -36,3 +36,33 @@ module.exports.createUser = function(req, res, next) {
     res.json(result.changes[0].new_val);
   });
 }
+
+/*
+ * Get a specific user.
+ */
+module.exports.getUser = function(req, res, next) {
+  var id = req.params.id;
+
+  r.table('user').get(id).run(req.app._rdbConn, function(err, result) {
+    if(err) {
+      return next(err);
+    }
+
+    res.json(result);
+  });
+}
+
+/*
+ * Delete a specific user.
+ */
+module.exports.deleteUser = function(req, res, next) {
+  var id = req.params.id;
+
+  r.table('user').get(id).delete().run(req.app._rdbConn, function(err, result) {
+    if(err) {
+      return next(err);
+    }
+
+    res.json({success: true});
+  });
+}

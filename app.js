@@ -14,6 +14,11 @@ app.route('/user')
   .get(user.getAll)
   .post(user.createUser);
 
+// Single user
+app.route('/user/:id')
+  .get(user.getUser)
+  .delete(user.deleteUser);
+
 // If we reach this middleware the route could not be handled and must be unknown.
 app.use(handle404);
 
