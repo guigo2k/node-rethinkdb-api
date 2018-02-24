@@ -6,6 +6,6 @@ module.exports = {
     authKey: process.env.TOKEN_SECRET
   },
   express: {
-     port: process.env.SERVER_PORT
+     port: process.env.HTTP_PORT
   }
 };
