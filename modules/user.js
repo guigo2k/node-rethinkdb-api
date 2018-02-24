@@ -66,3 +66,34 @@ module.exports.deleteUser = function(req, res, next) {
     res.json({success: true});
   });
 }
+
+/*
+ * Get user state.
+ */
+module.exports.getUserState = function(req, res, next) {
+  var id = req.params.id;
+
+  r.table('user').get(id).pluck('gamesPlayed', 'score').run(req.app._rdbConn, function(err, result) {
+    if(err) {
+      return next(err);
+    }
+
+    res.json(result);
+  });
+}
+
+/*
+ * Save user state.
+ */
+module.exports.saveUserState = function(req, res, next) {
+  var state = req.body;
+  var id    = req.params.id;
+
+  r.table('user').get(id).update(state, {returnChanges: true}).run(req.app._rdbConn, function(err, result) {
+    if(err) {
+      return next(err);
+    }
+
+    res.json(result);
+  });
+}

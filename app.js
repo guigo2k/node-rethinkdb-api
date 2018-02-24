@@ -19,6 +19,11 @@ app.route('/user/:id')
   .get(user.getUser)
   .delete(user.deleteUser);
 
+// User state
+app.route('/user/:id/state')
+  .get(user.getUserState)
+  .put(user.saveUserState);
+
 // If we reach this middleware the route could not be handled and must be unknown.
 app.use(handle404);
 
