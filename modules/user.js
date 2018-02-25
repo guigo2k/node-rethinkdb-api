@@ -104,12 +104,20 @@ module.exports.saveUserState = function(req, res, next) {
 module.exports.getUserFriends = function(req, res, next) {
   var id = req.params.id;
 
-  r.table('user').get(id).pluck('friends').run(req.app._rdbConn, function(err, result) {
+  r.table('user').get(id).do(
+    function(user) {
+      return r.expr(user('friends')).eqJoin(
+        function(friend) { return friend; },
+        r.table('user')
+      ).zip().pluck('id', 'name', 'score');
+    }
+  ).run(req.app._rdbConn, function(err, result) {
     if(err) {
       return next(err);
     }
-
-    res.json(result);
+    var str = JSON.stringify(result).replace(/score/g, 'highscore');
+    var obj = JSON.parse(str);
+    res.json({ friends: obj });
   });
 }
 
