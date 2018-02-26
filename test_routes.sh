@@ -15,7 +15,7 @@ sleep 3
 
 echo "Adding friends to new users"
 for id in ${users[@]}; do
-  local friends=$(for user in ${users[@]}; do echo -n "\"$user\","; done | sed '$ s/.$//')
+  friends=$(for user in ${users[@]}; do echo -n "\"$user\","; done | sed '$ s/.$//')
   curl -X PUT "http://localhost:3000/user/${id}/friends" \
   -H "Content-Type: application/json" \
   -d "{ \"friends\": [ $friends ] }" \
