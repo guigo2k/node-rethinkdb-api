@@ -15,6 +15,6 @@ services:
       - DB_HOST=rethinkdb
       - DB_NAME=game
     volumes:
-      - ./:/app
+      - ./app:/app
     ports:
       - "3000:3000"
