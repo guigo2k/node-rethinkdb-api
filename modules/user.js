@@ -5,7 +5,8 @@ var r = require('rethinkdb');
  * Get all users.
  */
 module.exports.getAll = function(req, res, next) {
-  r.table('user').run(req.app._rdbConn, function(err, cursor) {
+  r.table('user').pluck('id', 'name')
+   .run(req.app._rdbConn, function(err, cursor) {
     if(err) {
       return next(err);
     }
@@ -25,15 +26,25 @@ module.exports.getAll = function(req, res, next) {
  * Create a new user.
  */
 module.exports.createUser = function(req, res, next) {
-  var user = req.body;
-  console.dir(user);
+  var response = {};
+  var user = {
+    "name": req.body.name,
+    "score": 0,
+    "gamesPlayed": 0,
+    "friends": []
+  };
 
-  r.table('user').insert(user, {returnChanges: true}).run(req.app._rdbConn, function(err, result) {
+  r.table('user').insert(user, {returnChanges: true})
+   .run(req.app._rdbConn, function(err, result) {
     if(err) {
       return next(err);
     }
 
-    res.json(result.changes[0].new_val);
+    response.id = result.changes[0].new_val.id;
+    response.name = result.changes[0].new_val.name;
+
+    console.log(JSON.stringify(response));
+    res.json(response);
   });
 }
 
@@ -43,7 +54,8 @@ module.exports.createUser = function(req, res, next) {
 module.exports.getUser = function(req, res, next) {
   var id = req.params.id;
 
-  r.table('user').get(id).run(req.app._rdbConn, function(err, result) {
+  r.table('user').get(id)
+   .run(req.app._rdbConn, function(err, result) {
     if(err) {
       return next(err);
     }
@@ -58,7 +70,8 @@ module.exports.getUser = function(req, res, next) {
 module.exports.deleteUser = function(req, res, next) {
   var id = req.params.id;
 
-  r.table('user').get(id).delete().run(req.app._rdbConn, function(err, result) {
+  r.table('user').get(id).delete()
+   .run(req.app._rdbConn, function(err, result) {
     if(err) {
       return next(err);
     }
@@ -73,7 +86,8 @@ module.exports.deleteUser = function(req, res, next) {
 module.exports.getUserState = function(req, res, next) {
   var id = req.params.id;
 
-  r.table('user').get(id).pluck('gamesPlayed', 'score').run(req.app._rdbConn, function(err, result) {
+  r.table('user').get(id).pluck('gamesPlayed', 'score')
+   .run(req.app._rdbConn, function(err, result) {
     if(err) {
       return next(err);
     }
@@ -87,9 +101,10 @@ module.exports.getUserState = function(req, res, next) {
  */
 module.exports.saveUserState = function(req, res, next) {
   var state = req.body;
-  var id    = req.params.id;
+  var id = req.params.id;
 
-  r.table('user').get(id).update(state, {returnChanges: true}).run(req.app._rdbConn, function(err, result) {
+  r.table('user').get(id).update(state, {returnChanges: true})
+   .run(req.app._rdbConn, function(err, result) {
     if(err) {
       return next(err);
     }
@@ -115,8 +130,10 @@ module.exports.getUserFriends = function(req, res, next) {
     if(err) {
       return next(err);
     }
+
     var str = JSON.stringify(result).replace(/score/g, 'highscore');
     var obj = JSON.parse(str);
+
     res.json({ friends: obj });
   });
 }
@@ -125,10 +142,11 @@ module.exports.getUserFriends = function(req, res, next) {
  * Save user friends.
  */
 module.exports.saveUserFriends = function(req, res, next) {
+  var id = req.params.id;
   var friends = req.body;
-  var id    = req.params.id;
 
-  r.table('user').get(id).update(friends, {returnChanges: true}).run(req.app._rdbConn, function(err, result) {
+  r.table('user').get(id).update(friends, {returnChanges: true})
+   .run(req.app._rdbConn, function(err, result) {
     if(err) {
       return next(err);
     }
