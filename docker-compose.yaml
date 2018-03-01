@@ -8,7 +8,7 @@ services:
       - "28015"
       - "8080:8080"
   app:
-    image: "node-game-api"
+    image: "guigo2k/node-rethinkdb-api"
     environment:
       - NODE_ENV=development
       - DB_PORT=28015
