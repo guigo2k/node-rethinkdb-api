@@ -1,7 +1,5 @@
 #### POST /user
 ```
-token='bea376cb4ed3daad21e16d0bc25bd281'
-
 curl -X POST "http://localhost:3000/user" \
 -H "Content-Type: application/json" \
 -d '{"name": "John"}' | jq .
