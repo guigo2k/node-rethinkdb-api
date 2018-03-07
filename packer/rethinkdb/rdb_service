@@ -1,0 +1,64 @@
+#!/bin/bash
+# Author: Guilherme Jaccoud <guigo2k@guigo2k.com>
+
+set -e
+
+readonly script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly script_name="$(basename "$0")"
+
+. ${script_dir}/lib/rdb_global.sh
+
+# ==============================================================================
+# Helper Functions
+# ==============================================================================
+
+print_usage() {
+	cat <<EOF
+Usage: ${script_name} [COMMAND] [OPTIONS]
+
+This script can be used to install and start a RethinkDB cluster.
+It has been tested with CentOS 7.
+
+Commands:
+  install     Install RethinkDB server
+  start       Start RethinkDB server
+
+Examples:
+  # Install a specific RethinkDB version
+  ${script_name} install --version 2.3.6-0
+
+  # Start a RethinkDB server
+  ${script_name} start
+
+EOF
+}
+
+# ==============================================================================
+# Main Function
+# ==============================================================================
+
+main() {
+  local key="$1"
+  case "${key}" in
+    install )
+      shift
+      . ${script_dir}/lib/rdb_install.sh
+      ;;
+    start )
+      shift
+      . ${script_dir}/lib/rdb_start.sh
+      ;;
+    --help | -h )
+      print_usage
+      exit
+      ;;
+    *)
+      log_error "Unrecognized argument: ${key}"
+      print_usage
+      exit 1
+      ;;
+  esac
+  shift
+}
+
+main "$@"
