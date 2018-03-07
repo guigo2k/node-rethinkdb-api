@@ -1,9 +1,8 @@
 
 data "template_file" "startup_script" {
   template = <<EOF
-#!/bin/bash -xe
-# /opt/rethinkdb/rdb_svc run
-source /etc/environment
+#!/bin/bash -e
+/opt/rethinkdb/rdb_service start
 EOF
 }
 

@@ -3,8 +3,7 @@
 variable "project" {}
 variable "credentials" {}
 
-# infra
-variable "allow_all" {}
+# # infra
 variable "bastion_zone" {}
 
 # global

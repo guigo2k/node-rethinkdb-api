@@ -37,10 +37,10 @@ resource "google_compute_region_instance_group_manager" "rethinkdb" {
     port = 8080
   }
 
-  auto_healing_policies {
-    health_check      = "${google_compute_health_check.autohealing.self_link}"
-    initial_delay_sec = 300
-  }
+  # auto_healing_policies {
+  #   health_check      = "${google_compute_health_check.autohealing.self_link}"
+  #   initial_delay_sec = 300
+  # }
 }
 
 # https://www.terraform.io/docs/providers/google/r/compute_target_pool.html
@@ -48,9 +48,9 @@ resource "google_compute_region_instance_group_manager" "rethinkdb" {
 resource "google_compute_target_pool" "rethinkdb" {
   name = "rethinkdb-pool"
 
-  health_checks = [
-    "${google_compute_http_health_check.rethinkdb.name}",
-  ]
+  # health_checks = [
+  #   "${google_compute_http_health_check.rethinkdb.name}",
+  # ]
 }
 
 resource "google_compute_http_health_check" "rethinkdb" {
