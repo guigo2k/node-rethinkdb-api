@@ -5,10 +5,10 @@
     "rethinkdb_version": "2.3.6-0",
 
     "__comment": "# === Project Vars === #",
-    "auth_file": "{{env `HOME`}}/.gce/sym-dev-ic.json",
-    "project_id": "sym-dev-ic",
+    "auth_file": "{{env `HOME`}}/.gce/symphony-gce-test1.json",
+    "project_id": "symphony-gce-test1",
     "ssh_username": "centos",
-    "zone": "us-east1-b"
+    "zone": "us-west1-b"
   },
   "builders": [
     {
@@ -19,18 +19,20 @@
       "image_name": "rdb-gce-{{isotime \"2006-01-02-030405\"}}",
       "image_family": "rethinkdb",
       "ssh_username": "{{user `ssh_username`}}",
+      "network": "centos-test-vpc",
+      "subnetwork": "centos-test-us-west1-infra1",
       "zone": "{{user `zone`}}"
     }
   ],
   "provisioners": [
     {
       "type": "file",
-      "source": "{{template_dir}}/rethinkdb",
+      "source": "{{template_dir}}/rdb_setup",
       "destination": "/tmp"
     },{
       "type": "shell",
       "inline": [
-        "sudo mv /tmp/rethinkdb /opt/rethinkdb",
+        "sudo mv /tmp/rdb_setup /opt/rethinkdb",
         "sudo bash -c '/opt/rethinkdb/rdb_service install --version {{user `rethinkdb_version`}}'"
       ]
     }

@@ -23,3 +23,20 @@ resource "google_container_cluster" "k8s_cluster" {
 
   }
 }
+
+resource "null_resource" "get_cluster" {
+  depends_on    = ["google_container_cluster.k8s_cluster"]
+
+  provisioner "local-exec" {
+    interpreter = ["sh", "-c"]
+    command = <<EOF
+
+    # get cluster credentials
+    gcloud container clusters get-credentials ${var.name}-k8s \
+    --zone ${var.k8s_zone} --project ${var.project}
+
+    # intall helm
+    helm init
+EOF
+  }
+}

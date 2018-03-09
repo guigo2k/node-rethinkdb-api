@@ -41,12 +41,12 @@ resource "google_compute_instance_template" "rethinkdb" {
   network_interface {
     subnetwork = "${var.name}-${var.region}-data1"
 
-    access_config {
-      // Ephemeral IP
-    }
+    # access_config {
+    #   // Ephemeral IP
+    # }
   }
 
   service_account {
-    scopes = ["userinfo-email", "compute-rw", "storage-rw"]
+    scopes = ["userinfo-email"]
   }
 }

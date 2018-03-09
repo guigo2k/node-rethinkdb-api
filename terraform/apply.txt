@@ -1,0 +1,11 @@
+
+terraform apply \
+--target=google_compute_region_instance_group_manager.rethinkdb \
+--target=google_compute_target_pool.rethinkdb
+
+terraform apply \
+--target=google_compute_project_metadata_item.rethinkdb
+
+
+curl -H "Metadata-Flavor: Google" \
+"http://metadata/computeMetadata/v1/project/attributes/"

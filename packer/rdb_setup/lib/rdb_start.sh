@@ -14,7 +14,7 @@ print_usage() {
   cat <<EOF
 Usage: ${script_name} start [OPTIONS]
 
-This script can be used to start RethinkDB.
+This script can be used to start RethinkDB on GCE.
 It has been tested with CentOS 7.
 
 Examples:
@@ -39,7 +39,7 @@ get_cluster_instances() {
 # wait all instances to be up and running
 wait_cluster_instances() {
   local cmd="get_cluster_instances | grep 'RUNNING' | wc -l"
-  local instances=(`get_cluster_instances --short`)
+  local instances=($(get_cluster_instances --short))
 
   log_info "Waiting all instances to be running..."
   while [[ ! $(eval "${cmd}") == ${#instances[@]} ]]; do
@@ -59,11 +59,6 @@ get_custom_metadata() {
   get_metadata_value "instance/attributes/${key}"
 }
 
-# get the ID of the current instance
-get_instance_name() {
-  get_metadata_value "instance/name"
-}
-
 # get the IP address of the current instance
 get_instance_ip_address() {
   local network_interface="$1"
@@ -79,8 +74,8 @@ get_instance_ip_address() {
 
 rethinkdb_config() {
   local private_ip=$(get_instance_ip_address)
-  local instance_id=$(get_instance_name)
-  local instances=(`get_cluster_instances --short`)
+  local hostname=$(get_metadata_value "instance/name")
+  local instances=($(get_cluster_instances --short))
   local conf_path="/etc/rethinkdb/instances.d"
 
   log_info "Creating RethinkDB config file"
@@ -88,11 +83,11 @@ rethinkdb_config() {
     echo "bind=all"
     echo "canonical-address=${private_ip}"
     for i in ${instances[@]}; do
-      if [[ "$i" != "$instance_id"  ]]; then
+      if [[ "$i" != "$hostname" ]]; then
         echo "join=${i}"
       fi
     done
-  ) > ${conf_path}/${instance_id}.conf
+  ) >${conf_path}/${hostname}.conf
 }
 
 # ==============================================================================
@@ -100,25 +95,25 @@ rethinkdb_config() {
 # ==============================================================================
 
 main() {
-	while [[ $# > 0 ]]; do
-	  local key="$1"
-	  case "${key}" in
-	    --help | -h )
-	      print_usage
-	      exit
-	      ;;
-	    *)
-	      log_error "Unrecognized argument: ${key}"
-	      print_usage
-	      exit 1
-	      ;;
-	  esac
-	  shift
-	done
+  while [[ $# > 0 ]]; do
+    local key="$1"
+    case "${key}" in
+    --help | -h)
+      print_usage
+      exit
+      ;;
+    *)
+      log_error "Unrecognized argument: ${key}"
+      print_usage
+      exit 1
+      ;;
+    esac
+    shift
+  done
 
   rethinkdb_config
-	systemctl start rethinkdb || true
-	log_info "RethinkDB startup complete!"
+  service rethinkdb start || true
+  log_info "RethinkDB startup complete!"
 }
 
 main "$@"

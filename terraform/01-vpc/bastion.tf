@@ -2,6 +2,8 @@
 # https://www.terraform.io/docs/providers/google/r/compute_instance.html
 
 resource "google_compute_instance" "bastion" {
+  depends_on    = ["google_compute_subnetwork.game-infra1"]
+
   name         = "${var.name}-bastion"
   zone         = "${var.bastion_zone}"
   machine_type = "g1-small"
@@ -23,6 +25,6 @@ resource "google_compute_instance" "bastion" {
   }
 
   service_account {
-    scopes = ["userinfo-email"]
+    scopes = ["userinfo-email", "compute-ro"]
   }
 }
