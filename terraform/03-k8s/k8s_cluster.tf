@@ -24,7 +24,7 @@ resource "google_container_cluster" "k8s_cluster" {
   }
 }
 
-resource "null_resource" "get_cluster" {
+resource "null_resource" "k8s_login" {
   depends_on    = ["google_container_cluster.k8s_cluster"]
 
   provisioner "local-exec" {

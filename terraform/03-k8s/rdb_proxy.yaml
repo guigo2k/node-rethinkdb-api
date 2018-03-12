@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rdb-proxy
+  labels:
+    app: rdb-proxy
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: rdb-proxy
+  template:
+    metadata:
+      labels:
+        app: rdb-proxy
+    spec:
+      containers:
+      - name: rdb-proxy
+        image: rethinkdb
+        command: ["rethinkdb", "proxy", "--bind", "all", "--join", "centos-test-rdb-c3sl", "--join", "centos-test-rdb-n3m9", "--join", "centos-test-rdb-zwqt"]
+        ports:
+        - containerPort: 28015

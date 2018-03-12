@@ -4,11 +4,11 @@
 resource "google_compute_instance" "bastion" {
   depends_on    = ["google_compute_subnetwork.game-infra1"]
 
-  name         = "${var.name}-bastion"
-  zone         = "${var.bastion_zone}"
+  name         = "${var.name}-vpc-jumpfox"
+  zone         = "${var.jumpfox_zone}"
   machine_type = "g1-small"
 
-  tags = ["${var.name}-bastion", "${var.region}"]
+  tags = ["${var.name}-vpc-jumpfox", "${var.region}"]
 
   boot_disk {
     initialize_params {

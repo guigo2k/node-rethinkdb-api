@@ -1,0 +1,12 @@
+
+terraform apply -auto-approve \
+--target=google_compute_region_instance_group_manager.rdb_cluster \
+--target=google_compute_instance_template.rdb_template \
+--target=google_compute_firewall.rdb_firewall \
+--target=google_compute_target_pool.rdb_pool
+
+# wait for instances to be 'RUNNING'
+
+terraform apply -auto-approve \
+--target=google_compute_project_metadata_item.rdb_metadata \
+--target=google_compute_project_metadata_item.rdb_status

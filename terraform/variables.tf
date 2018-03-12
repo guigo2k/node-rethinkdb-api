@@ -3,9 +3,8 @@
 variable "project" {}
 variable "credentials" {}
 
-# # infra
-variable "allow_all" {}
-variable "bastion_zone" {}
+# # vpc
+variable "jumpfox_zone" {}
 
 # global
 variable "env" {}

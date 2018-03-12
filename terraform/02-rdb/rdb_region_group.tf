@@ -14,13 +14,14 @@
 #   }
 # }
 
-resource "google_compute_region_instance_group_manager" "rethinkdb" {
+resource "google_compute_region_instance_group_manager" "rdb_cluster" {
   name               = "${var.name}-rdb"
   base_instance_name = "${var.name}-rdb"
-  instance_template  = "${google_compute_instance_template.rethinkdb.self_link}"
+
   region             = "${var.region}"
-  target_pools       = ["${google_compute_target_pool.rethinkdb.self_link}"]
   target_size        = "${var.rdb_target_size}"
+  target_pools       = ["${google_compute_target_pool.rdb_pool.self_link}"]
+  instance_template  = "${google_compute_instance_template.rdb_template.self_link}"
 
   named_port {
     name = "cluster"
@@ -46,6 +47,6 @@ resource "google_compute_region_instance_group_manager" "rethinkdb" {
 
 # https://www.terraform.io/docs/providers/google/r/compute_target_pool.html
 
-resource "google_compute_target_pool" "rethinkdb" {
-  name = "rethinkdb-pool"
+resource "google_compute_target_pool" "rdb_pool" {
+  name = "${var.name}-rdb-pool"
 }

@@ -6,10 +6,6 @@ set -e
 readonly metadata_url="http://metadata.google.internal/computeMetadata/v1"
 readonly metadata_header="Metadata-Flavor: Google"
 
-# ==============================================================================
-# Helper Functions
-# ==============================================================================
-
 print_usage() {
   cat <<EOF
 Usage: ${script_name} start [OPTIONS]
@@ -24,42 +20,29 @@ Examples:
 EOF
 }
 
-# display all cluster members (sort ascending)
-get_cluster_instances() {
-  local name=$(echo ${HOSTNAME} | rev | cut -d'-' -f2- | rev)
-  local cmd="gcloud compute instances list --filter='name:${name}*' --sort-by='creationTimestamp' --format='[no-heading]'"
+# ==============================================================================
+# Helper Functions
+# ==============================================================================
 
-  if [[ "$1" == '--short' ]]; then
-    eval "${cmd}" | awk '{print $1}'
-  else
-    eval "${cmd}"
-  fi
-}
-
-# wait all instances to be up and running
-wait_cluster_instances() {
-  local cmd="get_cluster_instances | grep 'RUNNING' | wc -l"
-  local instances=($(get_cluster_instances --short))
-
-  log_info "Waiting all instances to be running..."
-  while [[ ! $(eval "${cmd}") == ${#instances[@]} ]]; do
-    sleep 3
-  done
-}
-
-# get the value at a specific instance metadata path
+# get the value at a specific metadata path
 get_metadata_value() {
   local readonly path="$1"
-  curl --silent --show-error --location --header "${metadata_header}" "${metadata_url}/${path}"
+  curl -s -S -L -H "${metadata_header}" "${metadata_url}/${path}"
 }
 
-# get the value of the given metadata Key
-get_custom_metadata() {
+# get instance related metadata
+get_instance_metadata() {
+  local readonly path="$1"
+  get_metadata_value "instance/${path}"
+}
+
+# get project metadata at a given key
+get_project_metadata() {
   local readonly key="$1"
-  get_metadata_value "instance/attributes/${key}"
+  get_metadata_value "project/${key}"
 }
 
-# get the IP address of the current instance
+# get the ip address of the current instance
 get_instance_ip_address() {
   local network_interface="$1"
   if [[ -z "$network_interface" ]]; then
@@ -68,26 +51,41 @@ get_instance_ip_address() {
   get_metadata_value "instance/network-interfaces/${network_interface}/ip"
 }
 
+# get all cluster instances
+get_cluster_members() {
+  local readonly name=$(echo $HOSTNAME | rev | cut -d'-' -f2- | rev)
+  get_project_metadata "attributes" | grep "$name"
+}
+
+# wait cluster metadata
+wait_cluster_ready() {
+  log_info "Waiting cluster metadata info..."
+  local readonly key="$(echo $HOSTNAME | rev | cut -d'-' -f2- | rev)-status"
+  local readonly cmd="get_project_metadata attributes/${key} | grep 'READY'"
+  until eval "$cmd"; do
+    sleep 3
+  done
+}
+
 # ==============================================================================
 # RethinkDB Functions
 # ==============================================================================
 
 rethinkdb_config() {
-  local private_ip=$(get_instance_ip_address)
-  local hostname=$(get_metadata_value "instance/name")
-  local instances=($(get_cluster_instances --short))
-  local conf_path="/etc/rethinkdb/instances.d"
-
-  log_info "Creating RethinkDB config file"
+  log_info "Creating RethinkDB config"
+  local readonly instances=($(get_cluster_members))
+  local readonly private_ip=$(get_instance_ip_address)
+  local readonly hostname=$(get_metadata_value "instance/name")
   (
     echo "bind=all"
     echo "canonical-address=${private_ip}"
     for i in ${instances[@]}; do
-      if [[ "$i" != "$hostname" ]]; then
-        echo "join=${i}"
+      local host=$(get_project_metadata "attributes/${i}" | cut -d/ -f2)
+      if [[ "$host" != "$hostname" && "$host" != "READY" ]]; then
+        echo "join=${host}"
       fi
     done
-  ) >${conf_path}/${hostname}.conf
+  ) >/etc/rethinkdb/instances.d/${hostname}.conf
 }
 
 # ==============================================================================
@@ -111,9 +109,13 @@ main() {
     shift
   done
 
+  log_info "Starting RethinkDB setup..."
+
+  wait_cluster_ready
   rethinkdb_config
   service rethinkdb start || true
-  log_info "RethinkDB startup complete!"
+
+  log_info "RethinkDB setup complete."
 }
 
 main "$@"

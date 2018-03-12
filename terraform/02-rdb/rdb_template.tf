@@ -8,13 +8,12 @@ EOF
 
 # https://www.terraform.io/docs/providers/google/r/compute_instance_template.html
 
-resource "google_compute_instance_template" "rethinkdb" {
-  name        = "rethinkdb-template"
+resource "google_compute_instance_template" "rdb_template" {
   description = "This template is used to create rethinkdb instances."
+  name        = "${var.name}-rdb"
+  tags        = ["${var.name}-rdb-cluster", "${var.region}"]
 
-  tags = ["rethinkdb-cluster", "${var.region}"]
-
-  labels = {
+  labels      = {
     environment = "${var.env}"
   }
 
