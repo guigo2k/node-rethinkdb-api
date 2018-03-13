@@ -1,6 +1,6 @@
 #!/bin/bash
 
-host="http://localhost:3000"
+host="${1:-'http://localhost:3000'}"
 users=()
 
 echo -e "\n=> CREATING 10 NEW USERS \n"

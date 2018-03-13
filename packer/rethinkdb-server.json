@@ -27,12 +27,12 @@
   "provisioners": [
     {
       "type": "file",
-      "source": "{{template_dir}}/rdb_setup",
+      "source": "{{template_dir}}/rdb_server",
       "destination": "/tmp"
     },{
       "type": "shell",
       "inline": [
-        "sudo mv /tmp/rdb_setup /opt/rethinkdb",
+        "sudo mv /tmp/rdb_server /opt/rethinkdb",
         "sudo bash -c '/opt/rethinkdb/rdb_service install --version {{user `rethinkdb_version`}}'"
       ]
     }

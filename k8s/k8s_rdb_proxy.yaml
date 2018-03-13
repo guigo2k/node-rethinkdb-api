@@ -1,0 +1,38 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: rdb-proxy
+spec:
+  selector:
+    app: rdb-proxy
+  ports:
+  - protocol: TCP
+    port: 28015
+    targetPort: 28015
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: rdb-proxy
+  name: rdb-proxy
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: rdb-proxy
+    spec:
+      containers:
+        - image: guigo2k/rdb-proxy
+          imagePullPolicy: Always
+          name: rdb-proxy
+          env:
+            - name: rdb_hosts
+              valueFrom:
+                secretKeyRef:
+                  name: rdb-hosts
+                  key: rdb_hosts
+          ports:
+            - containerPort: 28015

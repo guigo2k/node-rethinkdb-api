@@ -181,7 +181,7 @@ main() {
 
   rethinkdb_install
   service rethinkdb status || true
-  log_info "RethinkDB install complete!"
+  log_info "RethinkDB install completed."
 }
 
 main "$@"

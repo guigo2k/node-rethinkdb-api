@@ -1,0 +1,38 @@
+{
+  "min_packer_version": "1.0.4",
+  "variables": {
+    "repository": "guigo2k/rdb-proxy"
+  },
+  "builders": [
+    {
+      "type": "docker",
+      "image": "rethinkdb",
+      "commit": true,
+      "changes": [
+        "ENTRYPOINT /rdb_proxy_start"
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "{{template_dir}}/rdb_proxy/rdb_proxy_start.sh",
+      "destination": "/rdb_proxy_start"
+    },{
+      "type": "shell",
+      "inline": [
+        "chmod +x /rdb_proxy_start"
+      ]
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "docker-tag",
+        "repository": "{{user `repository`}}",
+        "tag": "latest"
+      },
+      "docker-push"
+    ]
+  ]
+}

@@ -13,7 +13,7 @@ jumpfox_zone = "us-west1-b"
 
 # rethinkdb
 rdb_machine_type = "n1-standard-1"
-rdb_source_image = "rdb-gce-2018-03-11-115629"
+rdb_source_image = "rdb-gce-2018-03-13-034754"
 rdb_target_size  = 3
 
 # kubernetes

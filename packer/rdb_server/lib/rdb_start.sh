@@ -6,6 +6,14 @@ set -e
 readonly metadata_url="http://metadata.google.internal/computeMetadata/v1"
 readonly metadata_header="Metadata-Flavor: Google"
 
+instance_default_network_interface="0"
+metadata_status_key_sufix="status-rdb"
+metadata_status_value="active"
+
+# ==============================================================================
+# Helper Functions
+# ==============================================================================
+
 print_usage() {
   cat <<EOF
 Usage: ${script_name} start [OPTIONS]
@@ -19,10 +27,6 @@ Examples:
 
 EOF
 }
-
-# ==============================================================================
-# Helper Functions
-# ==============================================================================
 
 # get the value at a specific metadata path
 get_metadata_value() {
@@ -44,10 +48,7 @@ get_project_metadata() {
 
 # get the ip address of the current instance
 get_instance_ip_address() {
-  local network_interface="$1"
-  if [[ -z "$network_interface" ]]; then
-    network_interface=0
-  fi
+  local network_interface="${1:-$instance_default_network_interface}"
   get_metadata_value "instance/network-interfaces/${network_interface}/ip"
 }
 
@@ -58,10 +59,10 @@ get_cluster_members() {
 }
 
 # wait cluster metadata
-wait_cluster_ready() {
+wait_metadata_status() {
   log_info "Waiting cluster metadata info..."
-  local readonly key="$(echo $HOSTNAME | rev | cut -d'-' -f2- | rev)-status"
-  local readonly cmd="get_project_metadata attributes/${key} | grep 'READY'"
+  local readonly key="$(echo $HOSTNAME | rev | cut -d'-' -f3- | rev)-${metadata_status_key_sufix}"
+  local readonly cmd="get_project_metadata attributes/${key} | grep '${metadata_status_value}'"
   until eval "$cmd"; do
     sleep 3
   done
@@ -75,17 +76,17 @@ rethinkdb_config() {
   log_info "Creating RethinkDB config"
   local readonly instances=($(get_cluster_members))
   local readonly private_ip=$(get_instance_ip_address)
-  local readonly hostname=$(get_metadata_value "instance/name")
+  local readonly name=$(get_metadata_value "instance/name")
   (
     echo "bind=all"
     echo "canonical-address=${private_ip}"
     for i in ${instances[@]}; do
-      local host=$(get_project_metadata "attributes/${i}" | cut -d/ -f2)
-      if [[ "$host" != "$hostname" && "$host" != "READY" ]]; then
+      local host=$(get_project_metadata "attributes/${i}")
+      if [[ "$host" != "$name" ]]; then
         echo "join=${host}"
       fi
     done
-  ) >/etc/rethinkdb/instances.d/${hostname}.conf
+  ) >/etc/rethinkdb/instances.d/${name}.conf
 }
 
 # ==============================================================================
@@ -110,11 +111,9 @@ main() {
   done
 
   log_info "Starting RethinkDB setup..."
-
-  wait_cluster_ready
+  wait_metadata_status
   rethinkdb_config
   service rethinkdb start || true
-
   log_info "RethinkDB setup complete."
 }
 
