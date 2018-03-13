@@ -33,7 +33,7 @@
       "type": "shell",
       "inline": [
         "sudo mv /tmp/rdb_server /opt/rethinkdb",
-        "sudo bash -c '/opt/rethinkdb/rdb_service install --version {{user `rethinkdb_version`}}'"
+        "sudo bash -c '/opt/rethinkdb/rdb_server install --version {{user `rethinkdb_version`}}'"
       ]
     }
   ]

@@ -2,7 +2,7 @@
 data "template_file" "startup_script" {
   template = <<EOF
 #!/bin/bash -e
-/opt/rethinkdb/rdb_service start
+/opt/rethinkdb/rdb_server start
 EOF
 }
 
