@@ -1,0 +1,15 @@
+#!/bin/bash
+# Author: Guilherme Jaccoud <guigo2k@guigo2k.com>
+
+if [[ "$1" == "start" ]]; then
+  rdb_hosts="${rdb_hosts:-"Missing 'rdb_hosts' environment variable"}"
+  rdb_proxy() {
+    echo -n "rethinkdb proxy --bind all "
+    for host in $(echo $rdb_hosts | tr ',' ' '); do
+      echo -n "--join $host "
+    done
+  }
+  exec $(rdb_proxy)
+fi
+
+exec "$@"

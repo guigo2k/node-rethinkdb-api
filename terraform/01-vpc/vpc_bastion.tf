@@ -2,10 +2,12 @@
 # https://www.terraform.io/docs/providers/google/r/compute_instance.html
 
 resource "google_compute_instance" "bastion" {
-  depends_on    = ["google_compute_subnetwork.game-infra1"]
+  depends_on    = [
+    "google_compute_subnetwork.game_infra1"
+  ]
 
   name         = "${var.name}-vpc-jumpfox"
-  zone         = "${var.jumpfox_zone}"
+  zone         = "${var.zone}"
   machine_type = "g1-small"
 
   tags = ["${var.name}-vpc-jumpfox", "${var.region}"]

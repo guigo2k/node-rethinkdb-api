@@ -4,19 +4,16 @@ project     = "symphony-gce-test1"
 credentials = "~/.gce/symphony-gce-test1.json"
 
 # global
-env    = "dev"
 name   = "centos-test"
+env    = "prod"
+
 region = "us-west1"
+zone   = "us-west1-b"
 
-# vpc_network
-jumpfox_zone = "us-west1-b"
-
-# rethinkdb
+# rethinkdb instances
 rdb_machine_type = "n1-standard-1"
-rdb_source_image = "rdb-gce-2018-03-13-034754"
 rdb_target_size  = 3
 
-# kubernetes
-k8s_zone               = "us-west1-b"
+# kubernetes instances
 k8s_machine_type       = "n1-standard-1"
 k8s_initial_node_count = 3

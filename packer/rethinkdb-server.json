@@ -1,26 +1,30 @@
 {
   "min_packer_version": "1.0.4",
   "variables": {
-    "__comment": "# === RethinkDB Vars === #",
     "rethinkdb_version": "2.3.6-0",
-
-    "__comment": "# === Project Vars === #",
-    "auth_file": "{{env `HOME`}}/.gce/symphony-gce-test1.json",
-    "project_id": "symphony-gce-test1",
+    "source_image_family": "centos-7",
     "ssh_username": "centos",
-    "zone": "us-west1-b"
+    "auth_file": "{{env `credentials`}}",
+    "project_id": "{{env `project`}}",
+    "image_family": "{{env `name`}}",
+    "image_name": "rdb-server-{{env `env`}}-{{isotime \"2006-01-02-030405\"}}",
+    "network": "{{env `name`}}-vpc",
+    "subnetwork": "{{env `name`}}-{{env `region`}}-infra1",
+    "zone": "{{env `zone`}}",
+    "terraform_path": "{{template_dir}}/../terraform/03-rdb",
+    "terraform_image": "rdb_server_image.txt"
   },
   "builders": [
     {
       "type": "googlecompute",
       "account_file": "{{user `auth_file`}}",
       "project_id": "{{user `project_id`}}",
-      "source_image_family": "centos-7",
-      "image_name": "rdb-gce-{{isotime \"2006-01-02-030405\"}}",
-      "image_family": "rethinkdb",
+      "source_image_family": "{{user `source_image_family`}}",
       "ssh_username": "{{user `ssh_username`}}",
-      "network": "centos-test-vpc",
-      "subnetwork": "centos-test-us-west1-infra1",
+      "image_family": "{{user `image_family`}}",
+      "image_name": "{{user `image_name`}}",
+      "network": "{{user `network`}}",
+      "subnetwork": "{{user `subnetwork`}}",
       "zone": "{{user `zone`}}"
     }
   ],
@@ -35,6 +39,10 @@
         "sudo mv /tmp/rdb_server /opt/rethinkdb",
         "sudo bash -c '/opt/rethinkdb/rdb_server install --version {{user `rethinkdb_version`}}'"
       ]
+    },
+    {
+      "type": "shell-local",
+      "command": "echo {{user `image_name`}} > {{user `terraform_path`}}/{{user `terraform_image`}}"
     }
   ]
 }

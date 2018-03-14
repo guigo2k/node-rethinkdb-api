@@ -25,7 +25,7 @@ spec:
         app: rdb-proxy
     spec:
       containers:
-        - image: guigo2k/rdb-proxy
+        - image: guigo2k/rethinkdb-proxy
           imagePullPolicy: Always
           name: rdb-proxy
           env:

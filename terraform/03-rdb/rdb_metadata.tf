@@ -4,7 +4,7 @@
 resource "google_compute_project_metadata_item" "rdb_metadata" {
   depends_on    = [
     "google_compute_region_instance_group_manager.rdb_cluster",
-    "google_compute_target_pool.rdb_pool",
+    "google_compute_target_pool.rdb_pool"
   ]
 
   count   = "${length(local.rdb_list)}"
@@ -13,7 +13,9 @@ resource "google_compute_project_metadata_item" "rdb_metadata" {
 }
 
 resource "google_compute_project_metadata_item" "rdb_status" {
-  depends_on    = ["google_compute_project_metadata_item.rdb_metadata"]
+  depends_on    = [
+    "google_compute_project_metadata_item.rdb_metadata"
+  ]
 
   key     = "${var.name}-status-rdb"
   value   = "active"
@@ -22,9 +24,9 @@ resource "google_compute_project_metadata_item" "rdb_status" {
 # https://www.terraform.io/docs/configuration/locals.html
 
 locals {
-  instances  = "${join(" ", google_compute_target_pool.rdb_pool.instances)}"
+  list       = "${join(",", google_compute_target_pool.rdb_pool.instances)}"
   search     = "${format("/%s-[[:alnum:]]//", google_compute_target_pool.rdb_pool.region)}"
   replace    = ""
-  rdb_string = "${replace(local.instances, local.search, local.replace)}"
-  rdb_list   = "${split(" ", local.rdb_string)}"
+  rdb_string = "${replace(local.list, local.search, local.replace)}"
+  rdb_list   = "${split(",", local.rdb_string)}"
 }

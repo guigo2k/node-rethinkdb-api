@@ -9,19 +9,20 @@
       "image": "rethinkdb",
       "commit": true,
       "changes": [
-        "ENTRYPOINT /rdb_proxy_start"
+        "CMD /opt/rethinkdb/rdb_proxy start"
       ]
     }
   ],
   "provisioners": [
     {
       "type": "file",
-      "source": "{{template_dir}}/rdb_proxy/rdb_proxy_start",
-      "destination": "/rdb_proxy_start"
+      "source": "{{template_dir}}/rdb_proxy",
+      "destination": "/tmp"
     },{
       "type": "shell",
       "inline": [
-        "chmod +x /rdb_proxy_start"
+        "mv /tmp/rdb_proxy /opt/rethinkdb",
+        "chmod +x /opt/rethinkdb/rdb_proxy"
       ]
     }
   ],
