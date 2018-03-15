@@ -1,10 +1,10 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: rdb-proxy
+  name: rethinkdb-proxy
 spec:
   selector:
-    app: rdb-proxy
+    app: rethinkdb-proxy
   ports:
   - protocol: TCP
     port: 28015
@@ -15,24 +15,24 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   labels:
-    app: rdb-proxy
-  name: rdb-proxy
+    app: rethinkdb-proxy
+  name: rethinkdb-proxy
 spec:
   replicas: 2
   template:
     metadata:
       labels:
-        app: rdb-proxy
+        app: rethinkdb-proxy
     spec:
       containers:
         - image: guigo2k/rethinkdb-proxy
           imagePullPolicy: Always
-          name: rdb-proxy
+          name: rethinkdb-proxy
           env:
-            - name: rdb_hosts
+            - name: RDB_HOSTS
               valueFrom:
                 secretKeyRef:
-                  name: rdb-hosts
-                  key: rdb_hosts
+                  name: rethinkdb-hosts
+                  key: RDB_HOSTS
           ports:
             - containerPort: 28015

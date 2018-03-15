@@ -8,11 +8,11 @@ resource "kubernetes_secret" "rdb_hosts" {
   ]
 
   metadata {
-    name = "rdb-hosts"
+    name = "rethinkdb-hosts"
   }
 
   data {
-    rdb_hosts = "${local.rdb_string}"
+    RDB_HOSTS = "${local.rdb_string}"
   }
 }
 
@@ -23,12 +23,12 @@ resource "kubernetes_config_map" "rdb_env" {
   ]
 
   metadata {
-    name = "rdb-env"
+    name = "rethinkdb-env"
   }
 
   data {
     NODE_ENV = "production"
-    DB_HOST  = "rdb-proxy"
+    DB_HOST  = "rethinkdb-proxy"
     DB_PORT  = 28015
     DB_NAME  = "game"
   }

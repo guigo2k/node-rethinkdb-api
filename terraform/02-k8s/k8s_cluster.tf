@@ -2,7 +2,7 @@
 # https://www.terraform.io/docs/providers/google/r/container_cluster.html
 
 resource "google_container_cluster" "k8s_cluster" {
-  name               = "${var.name}-k8s-cluster"
+  name               = "${var.name}-k8s"
   network            = "${var.name}-vpc"
   subnetwork         = "${var.name}-${var.region}-app1"
   zone               = "${var.zone}"
@@ -32,7 +32,7 @@ resource "null_resource" "k8s_login" {
     command = <<EOF
 
     # get cluster credentials
-    gcloud container clusters get-credentials ${var.name}-k8s-cluster \
+    gcloud container clusters get-credentials ${var.name}-k8s \
     --zone ${var.zone} --project ${var.project}
 
     # intall helm
