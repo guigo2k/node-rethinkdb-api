@@ -30,7 +30,7 @@ resource "google_compute_instance_template" "rdb_template" {
 
   // Create a new boot disk from an image
   disk {
-    source_image = "${chomp(file("rdb_server_image.txt"))}"
+    source_image = "${chomp(file("rdb_gce_image.txt"))}"
     auto_delete  = true
     boot         = true
     disk_size_gb = "30"

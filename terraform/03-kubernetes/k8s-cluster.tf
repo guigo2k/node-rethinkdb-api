@@ -9,6 +9,7 @@ resource "google_container_cluster" "k8s_cluster" {
   initial_node_count = "${var.k8s_initial_node_count}"
 
   node_config {
+    machine_type = "${var.k8s_machine_type}"
     oauth_scopes = [
       "https://www.googleapis.com/auth/compute",
       "https://www.googleapis.com/auth/devstorage.read_write",
@@ -17,10 +18,9 @@ resource "google_container_cluster" "k8s_cluster" {
       "https://www.googleapis.com/auth/cloud-platform",
     ]
 
-    labels {}
+    labels {
 
-  machine_type = "${var.k8s_machine_type}"
-
+    }
   }
 }
 
@@ -30,13 +30,23 @@ resource "null_resource" "k8s_login" {
   provisioner "local-exec" {
     interpreter = ["sh", "-c"]
     command = <<EOF
-
     # get cluster credentials
     gcloud container clusters get-credentials ${var.name}-k8s \
     --zone ${var.zone} --project ${var.project}
 
-    # intall helm
+    # install helm
     helm init
+    sleep 40
+
+    # deploy cert-manager
+    helm install \
+    --name certs \
+    --namespace kube-system \
+    --set rbac.create=false \
+    stable/cert-manager
+
+    # deploy nginx-ingress
+    helm install --name nginx stable/nginx-ingress
 EOF
   }
 }

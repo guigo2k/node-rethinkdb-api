@@ -21,13 +21,13 @@ spec:
           # A secretKeyRef to a google cloud json service account
           serviceAccountSecretRef:
             name: clouddns-service-account
-            key: service-account.json
+            key: service-account
           # The project in which to update the DNS zone
-          project: gcloud-prod-project
-      - name: cf-dns
-        cloudflare:
-          email: admin@tropicloud.net
-          # A secretKeyRef to a cloudflare api key
-          apiKeySecretRef:
-            name: cloudflare-api-key
-            key: api-key.txt
+          project: ${project}
+      # - name: cf-dns
+      #   cloudflare:
+      #     email: admin@tropicloud.net
+      #     # A secretKeyRef to a cloudflare api key
+      #     apiKeySecretRef:
+      #       name: cloudflare-api-key
+      #       key: api-key.txt

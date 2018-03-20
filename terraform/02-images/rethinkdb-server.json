@@ -11,8 +11,8 @@
     "network": "{{env `name`}}-vpc",
     "subnetwork": "{{env `name`}}-{{env `region`}}-infra1",
     "zone": "{{env `zone`}}",
-    "terraform_path": "{{template_dir}}/../terraform/03-rdb",
-    "terraform_image": "rdb_server_image.txt"
+    "terraform_path": "{{template_dir}}/../04-rethinkdb",
+    "terraform_image": "rdb_gce_image.txt"
   },
   "builders": [
     {
