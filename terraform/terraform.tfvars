@@ -10,7 +10,7 @@ zone   = "us-west1-b"                            # default project zone
 
 # cloud dns
 managed_zone    = "sym-gce-test"                 # cloud dns managed zone
-backend_domain  = "lorem.sym-gce-test.ml"          # backend app domain
+backend_domain  = "app.sym-gce-test.ml"          # backend app domain
 
 # docker images
 backend_app_img = "guigo2k/node-rethinkdb-api"   # backend app docker image

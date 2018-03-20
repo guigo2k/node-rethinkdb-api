@@ -1,4 +1,4 @@
-.PHONY: req all dev vpc img-rdb-proxy img-rdb-server images kube rdb secrets app dns rm-vpc rm-kube rm-rdb rm-secrets rm-app rm-dns rm-fw rm-all
+.PHONY: req all vpc img-rdb-proxy img-rdb-server imgs kube rdb data app dns rm-vpc rm-kube rm-rdb rm-data rm-app rm-dns rm-fw rm-all
 
 SHELL    := /bin/bash
 required := jq docker gcloud kubectl packer terraform
@@ -18,16 +18,17 @@ req:
 # ------------------------------------------------------------------------------
 
 all:
-	@$(MAKE) vpc
-	@$(MAKE) imgs
-	@$(MAKE) kube
-	@$(MAKE) rdb
-	@$(MAKE) data
-	@$(MAKE) app
-	@$(MAKE) dns
+	@$(MAKE) -s vpc
+	@$(MAKE) -s imgs
+	@$(MAKE) -s kube
+	@$(MAKE) -s rdb
+	@$(MAKE) -s data
+	@$(MAKE) -s app
+	@$(MAKE) -s dns
 
 vpc: req
 	@cd $(tf_dir)/01-vpc/ &&\
+	terraform init &&\
 	terraform apply -auto-approve
 
 img-rdb-proxy:
@@ -46,22 +47,27 @@ imgs:
 
 kube:
 	@cd $(tf_dir)/03-kubernetes/ &&\
+	terraform init &&\
 	terraform apply -auto-approve
 
 rdb:
 	@cd $(tf_dir)/04-rethinkdb/ &&\
+	terraform init &&\
 	terraform apply -auto-approve
 
 data:
 	@cd $(tf_dir)/05-secrets/ &&\
+	terraform init &&\
 	terraform apply -auto-approve
 
 app:
 	@cd $(tf_dir)/06-containers/ &&\
+	terraform init &&\
 	terraform apply -auto-approve
 
 dns:
 	@cd $(tf_dir)/07-dns/ &&\
+	terraform init &&\
 	terraform apply -auto-approve
 
 # ------------------------------------------------------------------------------
@@ -69,12 +75,12 @@ dns:
 # ------------------------------------------------------------------------------
 
 rm-all:
-	@$(MAKE) rm-dns
-	@$(MAKE) rm-app
-	@$(MAKE) rm-data
-	@$(MAKE) rm-rdb
-	@$(MAKE) rm-kube
-	@$(MAKE) rm-vpc
+	@$(MAKE) -s rm-dns
+	@$(MAKE) -s rm-app
+	@$(MAKE) -s rm-data
+	@$(MAKE) -s rm-rdb
+	@$(MAKE) -s rm-kube
+	@$(MAKE) -s rm-vpc
 
 rm-vpc: rm-fw
 	@cd $(tf_dir)/01-vpc/ &&\

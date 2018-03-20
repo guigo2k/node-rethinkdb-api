@@ -50,9 +50,10 @@ build/Release
 node_modules/
 jspm_packages/
 
-# Terraform
+# Terraform files
 .terraform
 *.tfstate*
+terraform/*/kube-render
 
 # Typescript v1 declaration files
 typings/

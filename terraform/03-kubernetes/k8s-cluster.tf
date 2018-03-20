@@ -39,6 +39,7 @@ resource "null_resource" "k8s_login" {
     sleep 40
 
     # deploy cert-manager
+    helm update
     helm install \
     --name certs \
     --namespace kube-system \
