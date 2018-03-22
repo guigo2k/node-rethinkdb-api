@@ -1,0 +1,25 @@
+#!/bin/bash
+# Author: Guilherme Jaccoud <guigo2k@guigo2k.com>
+
+set -e
+
+if [[ "$1" == "start" ]]; then
+
+  # expects a list of comma separated hosts in 'RDB_HOSTS' environment var
+  RDB_HOSTS="${RDB_HOSTS:?"Value cannot be empty. Aborting..."}"
+
+  # print 'rethinkdb proxy' command
+  rdb_proxy() {
+    echo -n "rethinkdb proxy --bind all "
+    for host in $(echo $RDB_HOSTS | tr ',' ' '); do
+      echo -n "--join $host "
+    done
+  }
+
+  # run rethinkdb proxy as PID 1
+  exec $(rdb_proxy)
+
+fi
+
+# or maybe not...
+exec "$@"

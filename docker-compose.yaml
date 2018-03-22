@@ -10,9 +10,8 @@ services:
   app:
     image: "guigo2k/node-rethinkdb-api"
     environment:
-      - NODE_ENV=development
-      - DB_PORT=28015
       - DB_HOST=rethinkdb
+      - DB_PORT=28015
       - DB_NAME=game
     volumes:
       - ./app:/app

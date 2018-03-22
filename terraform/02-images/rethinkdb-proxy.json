@@ -1,0 +1,39 @@
+{
+  "min_packer_version": "1.0.4",
+  "variables": {
+    "repository": "{{env `rdb_proxy_img`}}"
+  },
+  "builders": [
+    {
+      "type": "docker",
+      "image": "rethinkdb",
+      "commit": true,
+      "changes": [
+        "CMD /opt/rethinkdb/rdb_proxy start"
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "{{template_dir}}/rdb_proxy",
+      "destination": "/tmp"
+    },{
+      "type": "shell",
+      "inline": [
+        "mv /tmp/rdb_proxy /opt/rethinkdb",
+        "chmod +x /opt/rethinkdb/rdb_proxy"
+      ]
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "docker-tag",
+        "repository": "{{user `repository`}}",
+        "tag": "latest"
+      },
+      "docker-push"
+    ]
+  ]
+}

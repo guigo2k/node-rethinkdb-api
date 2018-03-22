@@ -2,19 +2,18 @@
 data "template_file" "startup_script" {
   template = <<EOF
 #!/bin/bash -e
-/opt/rethinkdb/rdb_service start
+/opt/rethinkdb/rdb_server start
 EOF
 }
 
 # https://www.terraform.io/docs/providers/google/r/compute_instance_template.html
 
-resource "google_compute_instance_template" "rethinkdb" {
-  name        = "rethinkdb-template"
+resource "google_compute_instance_template" "rdb_template" {
   description = "This template is used to create rethinkdb instances."
+  name        = "${var.name}-rdb"
+  tags        = ["${var.name}-rdb-cluster", "${var.region}"]
 
-  tags = ["rethinkdb-cluster", "${var.region}"]
-
-  labels = {
+  labels      = {
     environment = "${var.env}"
   }
 
@@ -31,7 +30,7 @@ resource "google_compute_instance_template" "rethinkdb" {
 
   // Create a new boot disk from an image
   disk {
-    source_image = "${var.rdb_source_image}"
+    source_image = "${chomp(file("rdb_gce_image.txt"))}"
     auto_delete  = true
     boot         = true
     disk_size_gb = "30"
@@ -41,12 +40,12 @@ resource "google_compute_instance_template" "rethinkdb" {
   network_interface {
     subnetwork = "${var.name}-${var.region}-data1"
 
-    access_config {
-      // Ephemeral IP
-    }
+    # access_config {
+    #   // Ephemeral IP
+    # }
   }
 
   service_account {
-    scopes = ["userinfo-email", "compute-rw", "storage-rw"]
+    scopes = ["userinfo-email"]
   }
 }

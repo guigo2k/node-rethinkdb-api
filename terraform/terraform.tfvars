@@ -1,23 +1,25 @@
+# cloud credentials
+project     = "YOUR GOOGLE CLOUD PROJECT"
+credentials = "YOUR SERVICE ACCOUT (JSON) FILE"
 
-# project
-project     = "sym-dev-ic"
-credentials = "~/.gce/sym-dev-ic.json"
+# project info
+name   = "sym-gce-test"                          # project name
+env    = "dev"                                   # project environment
+region = "us-west1"                              # project region
+zone   = "us-west1-b"                            # default project zone
 
-# global
-env    = "dev"
-name   = "centos-test"
-region = "us-west1"
+# cloud dns
+managed_zone    = "sym-gce-test"                 # managed zone name
+backend_domain  = "app.sym-gce-test.ml"          # backend app domain
 
-# # infra
-bastion_zone = "us-west1-b"
+# docker images
+backend_app_img = "guigo2k/node-rethinkdb-api"   # backend app image
+rdb_proxy_img   = "guigo2k/rethinkdb-proxy"      # rethinkdb proxy image
 
-# kubernetes
-k8s_zone               = "us-west1-b"
-k8s_machine_type       = "n1-standard-1"
-k8s_initial_node_count = 3
+# rethinkdb instances
+rdb_machine_type = "n1-standard-1"               # rethinkdb instance type
+rdb_target_size  = 3                             # rethinkdb cluster size
 
-# rethinkdb
-rdb_zone         = "us-west1-b"
-rdb_machine_type = "n1-standard-1"
-rdb_source_image = "rdb-gce-2018-03-07-024542"
-rdb_target_size  = 3
+# kubernetes instances
+k8s_machine_type       = "n1-standard-1"         # kubernetes instance type
+k8s_initial_node_count = 3                       # kubernetes cluster size

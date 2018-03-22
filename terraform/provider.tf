@@ -6,3 +6,7 @@ provider "google" {
   project     = "${var.project}"
   region      = "${var.region}"
 }
+
+# https://www.terraform.io/docs/providers/kubernetes/
+
+provider "kubernetes" {}
