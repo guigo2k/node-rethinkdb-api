@@ -36,7 +36,7 @@ resource "null_resource" "k8s_login" {
 
     # install helm
     helm init
-    sleep 40
+    sleep 60
 
     # deploy cert-manager
     helm update

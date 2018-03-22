@@ -13,7 +13,7 @@ resource "template_dir" "k8s_templates" {
 }
 
 # https://www.terraform.io/docs/provisioners/null_resource.html
-resource "null_resource" "wait_rdb_instances" {
+resource "null_resource" "k8s_deploy" {
   depends_on    = [ "template_dir.k8s_templates" ]
 
   provisioner "local-exec" {
